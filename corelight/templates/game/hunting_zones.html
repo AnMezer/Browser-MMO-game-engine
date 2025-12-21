@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load avatar_extras %}
+
+{% block title %}Зоны охоты{% endblock %}
+
+{% block content %}
+	<h3 class="mb-2 text-center">Зоны охоты:</h3>
+	
+  {% for global_location in global_locations %}
+		{% if not global_location.is_city %}
+			<div class="row justify-content-center mt-5">
+				<div class="col-12">
+					<div class="card shadow-sm">
+						<div class="card-header bg-primary text-white text-center" style="font-size: 1rem;">
+							<h3 class="mb-2">{{ global_location }}</h3>
+							<hr class="my-1" style="border-color: rgba(255,255,255,0.5);">
+							<p class="mb-0">{{ global_location.description }}</p>
+							<div class="d-flex justify-content-between mt-2">
+								<a href="{% url 'game:sublocations_list' global_location.slug %}" class="btn btn-primary">Осмотреть</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+	{% endfor %}
+{% endblock %}

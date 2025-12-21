@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}500{% endblock %}
+{% block content %}
+<h1>Внутренняя ошибка сервера</h1>
+<a href="{% url 'home' %}" class="btn btn-outline-primary">На главную</a>
+{% endblock %}

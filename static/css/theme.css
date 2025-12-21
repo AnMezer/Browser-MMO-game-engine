@@ -1,0 +1,312 @@
+/* 
+   ЭЛЬФИЙСКАЯ ТЕМА для MMO-игры (в стиле Lineage II)
+   Цветовая палитра: пергамент, золото, тёплые бежевые тона
+   Шрифты: Cinzel (заголовки, кнопки), MedievalSharp (стилизованные подписи)
+*/
+
+/* ───────────────────────────────────────
+   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ЦВЕТОВ
+   Используйте var(--имя) вместо хардкода
+   ─────────────────────────────────────── */
+:root {
+  --bg-body: #fbf7f0;           /* Фон всего body (пергамент) */
+  --bg-card: #ffffff;           /* Фон карточек и форм */
+  --border-gold: #b8860b;       /* Золотая рамка (DarkGoldenrod) */
+  --text-main: #3a3226;         /* Основной текст (тёмно-коричневый) */
+  --text-gold: #8b6b1f;         /* Акцентный золотистый текст */
+  --btn-text: #5a4a2f;          /* Цвет текста на кнопках */
+  --input-text: #4a4030;        /* Цвет текста в полях ввода */
+}
+
+/* ───────────────────────────────────────
+   ПОДКЛЮЧЕНИЕ ШРИФТОВ
+   ─────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap");
+
+/* ───────────────────────────────────────
+   ГЛОБАЛЬНЫЕ СТИЛИ СТРАНИЦЫ
+   ─────────────────────────────────────── */
+body {
+  background: radial-gradient(circle at center, #f8f4e9 0%, #e8e0d2 30%, #dcd4c3 60%, #cfc6b3 100%);
+  color: var(--text-main);
+  font-family: 'Cinzel', serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: var(--text-gold);
+  text-decoration: underline;
+}
+a:hover {
+  color: #ffd700; /* Яркое золото при наведении */
+}
+
+hr {
+  border-color: var(--border-gold);
+  opacity: 0.6;
+}
+
+.text-danger {
+  color: #ff6b6b !important; /* Мягкий красный для ошибок */
+}
+
+/* ───────────────────────────────────────
+   ИГРОВОЙ ХЕДЕР (Верхняя панель)
+   ─────────────────────────────────────── */
+.game-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: radial-gradient(circle at top center, #f9f5eb 0%, #f0e9dc 100%);
+  color: var(--text-main);
+  position: relative;
+  min-height: 220px;
+  box-sizing: border-box;
+  border-bottom: 2px solid var(--border-gold);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Левая зона: кнопки навигации (зоны охоты) */
+.header-left {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-start;
+  align-items: flex-end; /* Прижатие к низу хедера */
+  margin-top: auto; /* Компенсация абсолютного позиционирования логотипа */
+}
+
+/* Правая зона: аватар, кнопка выхода */
+.header-right {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+/* Центральный логотип — абсолютно позиционирован по центру */
+.header-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.logo-link {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-img {
+  height: 180px;
+  width: auto;
+  filter: drop-shadow(0 0 8px rgba(184, 134, 11, 0.4)); /* Золотое сияние */
+}
+
+/* Доп. навигация под логотипом (если понадобится) */
+.header-nav {
+  height: 2.5rem;
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* ───────────────────────────────────────
+   СТИЛИ КАРТОЧЕК (profile, location и т.д.)
+   ─────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-gold);
+  border-radius: 12px;
+  box-shadow: 
+    0 0 0 2px rgba(184, 134, 11, 0.2),
+    0 6px 20px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 
+    0 0 0 3px rgba(184, 134, 11, 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+.card-header {
+  background: linear-gradient(to bottom, #dcd4c3, #cfc6b3);
+  border-bottom: 2px solid var(--border-gold);
+  color: var(--btn-text) !important;
+  font-family: 'MedievalSharp', cursive;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem;
+}
+
+
+
+.btn-attack,
+.btn-attack {
+    font-family: 'Cinzel', serif;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+}
+
+
+
+
+.card,
+.card-header,
+.card-body {
+  background: radial-gradient(circle at center, #f8f4e9 0%, #e8e0d2 30%, #dcd4c3 60%, #cfc6b3 100%);
+  border-color: var(--border-gold);
+}
+
+.tooltip-inner {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.75rem;
+  background-color: #fdf9ee;
+  color: #2c1e0c;
+  border: 1px solid #d5c8a3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  max-width: 220px;
+  text-align: left;
+  padding: 6px 10px;
+}
+
+/* ───────────────────────────────────────
+   СТИЛИ КНОПОК
+   ─────────────────────────────────────── */
+
+
+
+/* === Активная основная кнопка === */
+.btn-primary {
+  background: linear-gradient(to bottom, #e8e0d2, #d8cdc0);
+  border: 1px solid var(--border-gold);
+  color: var(--btn-text) !important;
+}
+
+/* === Неактивная основная кнопка === */
+.btn-primary-disabled {
+  background: linear-gradient(to bottom, #f0eae2, #e8e0d2) !important;
+  border: 1px solid #c9b99a !important;
+  color: #a09070 !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* === Кнопка "успех" (для форм и позитивных действий) === */
+.btn-success {
+  background: linear-gradient(to bottom, #f0e9dc, #e0d7cc);
+  border: 2px solid var(--border-gold);
+  color: var(--btn-text);
+}
+
+.btn-success:hover:not(:disabled):not(.disabled) {
+  background: linear-gradient(to bottom, #e8e0d2, #d8cdc0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+  color: #4a3a1f;
+}
+
+/* === Контурная кнопка === */
+.btn-outline-primary {
+  color: var(--text-gold) !important;
+  border: 1px solid var(--border-gold);
+  background: transparent;
+  font-family: 'Cinzel', serif;
+}
+
+.btn-outline-primary:hover:not(:disabled):not(.disabled) {
+  background: rgba(184, 134, 11, 0.1);
+  color: #ffd700 !important;
+}
+
+/* ───────────────────────────────────────
+   СТИЛИ ФОРМ И ПОЛЕЙ ВВОДА
+   ─────────────────────────────────────── */
+.form-control {
+  background: #fdfbf5;
+  border: 1px solid var(--border-gold);
+  color: var(--input-text);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-family: 'Cinzel', serif;
+}
+
+.form-control:focus {
+  border-color: var(--border-gold);
+  box-shadow: 
+    0 0 0 2px rgba(184, 134, 11, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #8a859e; /* Светло-серый для placeholder */
+}
+
+/* Стили для floating labels (если используете) */
+.form-floating > label {
+  color: #8a859e;
+}
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: var(--text-gold);
+}
+.form-floating > .form-control:focus {
+  background: #fefcf8;
+  border-color: var(--border-gold);
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.2);
+}
+
+/* ───────────────────────────────────────
+   СТИЛИ ВЫБОРА АВАТАРА (в форме регистрации)
+   ─────────────────────────────────────── */
+.avatar-item img {
+  border: 2px solid transparent;
+  transition: transform 0.2s, border-color 0.2s;
+  width: 60px;
+  height: auto;
+  cursor: pointer;
+}
+
+.avatar-item input:checked + div + img,
+.avatar-item:hover img {
+  border-color: var(--border-gold);
+  transform: scale(1.05);
+}
+
+/* Скрытие радиокнопок (стилизация через соседний div) */
+input[type="radio"] {
+  display: none;
+}
+input[type="radio"]:checked + div {
+  color: var(--text-gold) !important;
+  font-weight: bold;
+}
+
+/* Аватар персонажа в сайдбаре — прямоугольный, 3:4 */
+
+.sidebar-avatar-img {
+  width: 100%;           /* занимает всю ширину родителя */
+  max-width: 192px;      /* не больше 192px на больших экранах */
+  aspect-ratio: 3 / 4;   /* сохраняет пропорции 3:4 */
+  object-fit: cover;
+  object-position: top;  /* или center, или 50% 40% — подберите под лицо */
+  border: 2px solid var(--border-gold);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fdfbf5;
+  box-sizing: border-box;
+}

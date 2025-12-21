@@ -1,0 +1,33 @@
+{% load static %}
+
+<header class="game-header">
+  <!-- Левая область -->
+  <div class="header-left">
+    <a href="{% url 'player_character' %}" class="btn btn-primary">Персонаж</a>
+    <a href="{% url 'game:city' %}" class="btn btn-primary">Городская площадь</a>
+    <a href="{% url 'game:hunting_zones' %}" class="btn btn-primary">Зоны охоты</a>
+  </div>
+  
+  <!-- Центр: логотип -->
+  <div class="header-logo">
+    <a href="{% url 'index' %}" class="logo-link">
+      <img src="{% static 'img/logo.png' %}" alt="Логотип" class="logo-img">
+    </a>
+    <div class="header-nav">
+      <!-- Навигационные кнопки -->
+    </div>
+  </div>
+
+  <!-- Правая область -->
+  <div class="header-right">
+  {% if user.is_authenticated %}
+    <form method="post" action="{% url 'logout' %}" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Выйти</button>
+    </form>
+  {% else %}
+    <a href="{% url 'login' %}" class="btn btn-primary">Войти</a>
+    <a href="{% url 'register' %}" class="btn btn-primary">Регистрация</a>
+  {% endif %}
+</div>
+</header>

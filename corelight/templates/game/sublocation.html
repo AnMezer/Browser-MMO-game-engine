@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}{{ sublocation.name }}{% endblock %}
+
+{% block content %}
+  <div class="container mt-4 card shadow-sm">
+    <!-- Название локации -->
+    <div class="text-center mb-4">
+      <h1 class="mb-2" style="font-family: 'MedievalSharp', cursive; font-size: 1.4rem; color: #3e3a30;">
+        {{ sublocation }}
+      </h1>
+      <p class="text-muted" style="font-size: 0.9rem;">
+        Глобальная зона: {{ global_location.name }}
+      </p>
+    </div>
+
+    <!-- Блок отдыха) -->
+    {% if current_user_data.on_cooldown %}
+    <div class="alert alert-warning text-center mb-4" style="font-family: 'MedievalSharp', cursive; font-size: 0.7rem; color: #8B5E3C;">
+        Вы слишком устали после последнего поединка. Отдыхайте ещё 
+        <strong id="cooldown-timer">{{ current_user_data.cooldown }}</strong> 
+        секунд(ы).
+    </div>
+
+    <script>
+        // Получаем оставшееся время от Django (в секундах)
+        let secondsLeft = {{ current_user_data.cooldown }};
+        const timerElement = document.getElementById('cooldown-timer');
+
+        function countdown() {
+        if (secondsLeft <= 0) {
+            // Время вышло — переходим в локацию
+            window.location.href = "{% url 'game:sublocation' current_user_data.current_global_location.slug current_user_data.current_sublocation.slug %}";
+            return;
+        }
+
+        // Обновляем отображение
+        timerElement.textContent = secondsLeft;
+        secondsLeft -= 1;
+
+        // Запускаем следующий тик через 1 секунду
+        setTimeout(countdown, 1000);
+        }
+
+        // Запускаем таймер
+        countdown();
+    </script>
+
+
+    {% endif %}
+
+
+    <!-- Блок: Монстры -->
+    <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-2" style="font-family: 'MedievalSharp', cursive; font-size: 1.1rem; color: #5a5448; text-align: center;">
+        ⚔ Цели для охоты
+    </div>
+        <div class="card-body p-3">
+            <!-- Сетка 2x2 -->
+            <div class="row g-3 justify-content-center">
+            {% for monster in monsters %}
+                <div class="col-6 d-flex">
+                <div class="card h-100 w-100 shadow-sm" style="border-radius: 6px; border: 2px solid #b8860b;">
+                    <div class="card-body d-flex flex-column p-2">
+                    <!-- Имя монстра -->
+                    <h6 class="card-title text-center mb-2" style="font-family: 'MedievalSharp', cursive; font-size: 0.95rem; color: #3e3a30;">
+                        {{ monster }}
+                    </h6>
+
+                    <!-- Аватар монстра (вертикальный, 3:4) -->
+                    <div class="d-flex justify-content-center mb-2">
+                        <div class="d-flex justify-content-center mb-2" style="border: 1px solid #b8860b;">
+                            {% if monster.avatar %}
+                                <img src="{{ monster.avatar.url }}" 
+                                    alt="{{ monster.name }}" 
+                                    style="width: 60px; height: 80px; object-fit: cover; object-position: top; border-radius: 4px; border: 1px solid #d5d0c2;">
+                            {% else %}
+                                <div style="width: 60px; height: 80px; background-color: #f0eae2; border: 1px solid #d5d0c2; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #8a8375;">
+                                ?
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                        <!-- Кнопка "Напасть" -->
+                        <div class="d-flex justify-content-center mt-2">
+                            {% if not current_user_data.on_cooldown %}
+                                <a href="{% url 'game:attack_monster' current_user_data.current_global_location.slug current_user_data.current_sublocation.slug monster.slug %}" class="btn btn-primary">
+                                    Атаковать
+                                </a>
+                            {% else %}
+                                <a href="{% url 'game:attack_monster' current_user_data.current_global_location.slug current_user_data.current_sublocation.slug monster.slug %}" class="btn btn-primary-disabled">
+                                Атаковать
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Два блока в ряд: Добыча и Сбор -->
+    <div class="row g-4 mb-2">
+      <!-- Добыча минералов -->
+      <div class="col-md-6 card shadow-sm">
+          <div class="card-header bg-white py-2" style="font-family: 'MedievalSharp', cursive; font-size: 1.05rem; color: #5a5448; text-align: center;">
+            ⛏️ Добыча минералов
+          </div>
+          <div class="card-body p-3">
+            <!-- Сюда — контент по добыче -->
+            <div id="mining-content">
+              <!-- Пусто -->
+            </div>
+          </div>
+      </div>
+
+      <!-- Сбор трав -->
+      <div class="col-md-6 card shadow-sm">
+          <div class="card-header bg-white py-2" style="font-family: 'MedievalSharp', cursive; font-size: 1.05rem; color: #5a5448; text-align: center;">
+            🌿 Сбор трав
+          </div>
+          <div class="card-body p-3">
+            <!-- Сюда — контент по сбору -->
+            <div id="herbalism-content">
+              <!-- Пусто -->
+            </div>
+          </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+

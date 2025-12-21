@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+
+{% block title %}Торговец{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --slot-size: 40px;
+  --gap: 4px;
+}
+
+.inventory-section {
+  background-color: #f8f4e9;
+  border: 1px solid #d5c8a3;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 16px;
+  /* 🔥 ФИКСИРОВАННАЯ ВЫСОТА — главная строка */
+  height: 520px; /* ← можно 240px, 280px, 320px — пробуй */
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-section h3 {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 1.3rem;
+  text-align: center;
+  margin-bottom: 8px;
+  color: #2c1e0c;
+  flex-shrink: 0; /* чтобы заголовок не сжимался */
+}
+
+.grid-inventory {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 4px;
+  width: 100%;
+  padding: 4px;
+  background: #fdf9ee;
+  border-radius: 4px;
+  flex-grow: 1; /* занимает всё оставшееся место */
+  overflow-y: auto; /* вертикальный скролл */
+  overflow-x: hidden;
+}
+
+.inventory-slot {
+  width: var(--slot-size);
+  height: var(--slot-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.inventory-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.empty-slot {
+  color: #aaa;
+  font-size: 0.6rem;
+}
+
+.quantity-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 0 2px;
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.55rem;
+  color: #2c1e0c;
+  line-height: 1;
+}
+#notification {
+  background: #f8f4e9;
+  border: 1px solid #d5c8a3;
+  color: #2c1e0c;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  padding: 8px 16px;
+}
+
+</style>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert 
+      {% if message.tags == 'error' %}alert-danger
+      {% elif message.tags == 'debug' or message.tags == 'info' %}alert-info
+      {% elif message.tags == 'success' %}alert-success
+      {% elif message.tags == 'warning' %}alert-warning
+      {% else %}alert-{{ message.tags }}
+      {% endif %} 
+      alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3"
+      role="alert" style="z-index: 1000; max-width: 400px;">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+    </div>
+  {% endfor %}
+
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.alert').forEach(el => el.remove());
+    }, 3000);
+  </script>
+{% endif %}
+
+<div class="container-fluid px-3">
+  <div class="row justify-content-center mt-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-center">
+          <h2 class="mb-0" style="font-family: 'MedievalSharp', cursive; font-size: 1.4rem;">
+            🪙 Торговец
+          </h2>
+        </div>
+        <div class="card-body p-3">
+
+          <div class="row">
+            <!-- Инвентарь игрока -->
+            <div class="col-md-6">
+              <div class="inventory-section">
+                <h3>Твой инвентарь</h3>
+                <div class="grid-inventory">
+                  {% for slot in player_inventory %}
+                    {% if slot.type == 'stack' %}
+                      <div class="inventory-slot"
+                           data-bs-toggle="tooltip"
+                           data-bs-html="true"
+                           title="<strong>{{ slot.name }}</strong><br><small>{{ slot.description|default:'Нет описания' }}</small><br>Кол-во: {{ slot.quantity }}"
+                           style="cursor: pointer;"
+                           onclick="openTradeModal({{ slot.item_id }}, 'player', '{{ slot.name|escapejs }}', {{ slot.quantity }}, 0)">
+                        {% if slot.logo_url %}
+                          <img src="{{ slot.logo_url }}" alt="{{ slot.name }}">
+                        {% else %}
+                          <span>?</span>
+                        {% endif %}
+                        <div class="quantity-badge">{{ slot.quantity }}</div>
+                      </div>
+                    {% elif slot.type == 'instance' %}
+                      <div class="inventory-slot"
+                           data-bs-toggle="tooltip"
+                           title="<strong>{{ slot.name }}</strong><br>
+                            <small>
+                            {{ slot.description|default:'Нет описания' }}<br>
+                            Бонусы:<br>
+                            {% for stat_name, values in slot.stats.items %}
+                                {% with base=values.base|default:0 bonus=values.bonus|default:0 %}
+                                {% if base > 0 or bonus > 0 %}
+                                    {{ stat_name }}
+                                    {% if base > 0 %}
+                                    {{ base }}
+                                    {% endif %}
+                                    {% if bonus > 0 %}
+                                    <strong><span style='color: green;'>[+{{ bonus }}]</span></strong>
+                                    {% endif %}
+                                    <br>
+                                {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+                            </small>"
+                           style="cursor: pointer;"
+                           onclick="openTradeModal({{ slot.item_id }}, 'player', '{{ slot.name|escapejs }}', 1, 0, '{{ slot.world_id }}')">
+                           
+                           
+                        {% if slot.logo_url %}
+                          <img src="{{ slot.logo_url }}" alt="{{ slot.name }}">
+                        {% else %}
+                          <span>?</span>
+                        {% endif %}
+                      </div>
+                    {% else %}
+                      <div class="inventory-slot empty-slot">X</div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            
+
+            <!-- Ассортимент торговца -->
+            <div class="col-md-6">
+              <div class="inventory-section">
+                <h3>Ассортимент</h3>
+                <div class="grid-inventory">
+                  {% for item in trader_items %}
+                    {% if item.is_stacked %}
+                      <div class="inventory-slot"
+                          data-bs-toggle="tooltip"
+                          data-bs-html="true"
+                          title="<strong>{{ item.name }}</strong><br><small>{{ item.description|default:'Нет описания' }}</small><br>Цена: {{ item.base_price }} зм/ед"
+                          style="cursor: pointer;"
+                          onclick="openTradeModal({{ item.item_id }}, 'shop', '{{ item.name|escapejs }}', {{ item.max_quantity }}, {{ item.base_price }})">
+                        {% if item.logo_url %}
+                          <img src="{{ item.logo_url }}" alt="{{ item.name }}">
+                        {% else %}
+                          <span>?</span>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                    {% if not item.is_stacked %}
+
+                      <div class="inventory-slot"
+                          data-bs-toggle="tooltip"
+                          data-bs-html="true"
+                          title="<strong>{{ item.name }}</strong><br><small>{{ item.description|default:'Нет описания' }}</small><br>Цена: {{ item.base_price }} зм/ед"
+                          style="cursor: pointer;"
+                          onclick="openTradeModal({{ item.item_id }}, 'shop', '{{ item.name|escapejs }}', {{ item.max_quantity }}, {{ item.base_price }})">
+                        {% if item.logo_url %}
+                          <img src="{{ item.logo_url }}" alt="{{ item.name }}">
+                        {% else %}
+                          <span>?</span>
+                        {% endif %}
+                        {% if item.max_quantity > 1 %}
+                          <div class="quantity-badge">{{ item.max_quantity }}</div>
+                        {% endif %}
+                      </div>
+
+                    
+                    {% endif %}
+                    {% empty %}
+                    <div class="col-12 text-center py-3">
+                      <em>Нет товаров</em>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="tradeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" action="{% url 'game:trade' %}" id="tradeForm">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">Сделка</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="item_id" id="formItemId">
+          <input type="hidden" name="source" id="formSource">
+          <input type="hidden" name="price_per_unit" id="formPricePerUnit">
+          <input type="hidden" name="world_id" id="formWorldId">
+          
+
+          <p id="tradeItemName" style="font-weight: bold;">Выберите предмет</p>
+          <div class="mb-3">
+            <label for="tradeQuantity" class="form-label">Количество:</label>
+            <div class="input-group">
+              <input type="number" class="form-control" name="quantity" id="tradeQuantity" min="1" value="1">
+              <button class="btn btn-outline-secondary" type="button" id="tradeAllBtn">Все</button>
+            </div>
+          </div>
+          <p>Стоимость: <span id="tradeTotal">0</span> зм</p>
+          <div id="tradeError" class="text-danger"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="submit" class="btn btn-success" id="tradeConfirmBtn">Подтвердить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap Tooltip + Modal + Логика -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    
+function openTradeModal(itemId, source, itemName, maxQty, pricePerUnit, worldId = null) {
+  // Обновляем форму
+  document.getElementById('formItemId').value = itemId;
+  document.getElementById('formSource').value = source;
+  document.getElementById('formPricePerUnit').value = pricePerUnit;
+  document.getElementById('formWorldId').value = worldId || '';
+
+  // Остальное — как у вас, но без AJAX и confirmBtn.onclick
+  const modalTitle = document.querySelector('#tradeModal .modal-title');
+  let operation = source === 'shop' ? 'Покупка' : 'Продажа';
+  modalTitle.textContent = operation;
+
+  document.getElementById('tradeItemName').textContent = itemName;
+  const qtyInput = document.getElementById('tradeQuantity');
+  const totalEl = document.getElementById('tradeTotal');
+  const allBtn = document.getElementById('tradeAllBtn');
+
+  qtyInput.max = maxQty;
+  qtyInput.value = 1;
+  totalEl.textContent = source === 'shop' ? pricePerUnit : 0;
+
+  allBtn.onclick = () => {
+    qtyInput.value = maxQty;
+    totalEl.textContent = source === 'shop' ? pricePerUnit * maxQty : 0;
+  };
+
+  qtyInput.oninput = () => {
+    let qty = parseInt(qtyInput.value) || 0;
+    qty = Math.max(1, Math.min(qty, maxQty));
+    qtyInput.value = qty;
+    totalEl.textContent = source === 'shop' ? pricePerUnit * qty : 0;
+  };
+
+  // Показываем модалку
+  const modal = new bootstrap.Modal(document.getElementById('tradeModal'));
+  modal.show();
+}
+
+// Активация тултипов
+document.addEventListener('DOMContentLoaded', () => {
+  const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el, {
+    placement: 'top',
+    html: true,
+    customClass: 'inventory-tooltip'
+  }));
+});
+</script>
+
+<style>
+.inventory-tooltip .tooltip-inner {
+  font-family: 'MedievalSharp', cursive;
+  font-size: 0.75rem;
+  background-color: #fdf9ee;
+  color: #2c1e0c;
+  border: 1px solid #d5c8a3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  max-width: 200px;
+  text-align: left;
+  padding: 6px 8px;
+}
+</style>
+
+{% endblock %}

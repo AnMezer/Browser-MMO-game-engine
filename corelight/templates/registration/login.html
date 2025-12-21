@@ -1,0 +1,49 @@
+<!-- templates/registration/login.html -->
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h2 class="text-center mb-0">Вход</h2>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+
+          <!-- Поле "Имя пользователя" -->
+          <div class="form-floating mb-3">
+            {{ form.username|add_class:"form-control" }}
+            <label for="{{ form.username.id_for_label }}">Имя пользователя</label>
+            {% if form.username.errors %}
+              <div class="text-danger mt-1">{{ form.username.errors }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Поле "Пароль" -->
+          <div class="form-floating mb-3">
+            {{ form.password|add_class:"form-control" }}
+            <label for="{{ form.password.id_for_label }}">Пароль</label>
+            {% if form.password.errors %}
+              <div class="text-danger mt-1">{{ form.password.errors }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Кнопка "Войти" -->
+          <button type="submit" class="btn btn-primary w-100">Войти</button>
+        </form>
+
+        <!-- Ссылка "Забыли пароль?" -->
+        <hr class="my-4">
+        <p class="text-center">
+          <a href="{% url 'password_reset' %}" class="text-decoration-none">Забыли пароль?</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

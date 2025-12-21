@@ -1,0 +1,65 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Прозрачный фон -->
+  <defs>
+    <!-- Градиент для фона ядра -->
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#ffd700" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#4a4a4a" stop-opacity="0.2"/>
+    </radialGradient>
+
+    <!-- Градиент для молний -->
+    <linearGradient id="lightningGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#ffff00" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.6"/>
+    </linearGradient>
+
+    <!-- Фильтр для свечения -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Центральный круг с градиентом -->
+  <circle cx="250" cy="250" r="200" fill="url(#coreGlow)" filter="url(#glow)"/>
+
+  <!-- Центральный источник света -->
+  <circle cx="250" cy="250" r="40" fill="#ffffff" filter="url(#glow)"/>
+
+  <!-- Молнии -->
+  <g stroke="url(#lightningGradient)" stroke-width="8" stroke-linecap="round" filter="url(#glow)">
+    <!-- Молния 1 -->
+    <path d="M250,250 L220,200 L230,220 L200,180 L210,200 L180,160" />
+    <!-- Молния 2 -->
+    <path d="M250,250 L280,200 L270,220 L300,180 L290,200 L320,160" />
+    <!-- Молния 3 -->
+    <path d="M250,250 L220,300 L230,280 L200,320 L210,300 L180,340" />
+    <!-- Молния 4 -->
+    <path d="M250,250 L280,300 L270,280 L300,320 L290,300 L320,340" />
+    <!-- Молния 5 (вертикальная) -->
+    <path d="M250,250 L250,180 M250,250 L250,320" />
+    <!-- Молния 6 (горизонтальная) -->
+    <path d="M250,250 L180,250 M250,250 L320,250" />
+  </g>
+
+  <!-- Концентрические лучи / кольца -->
+  <g stroke="#ffd700" stroke-width="2" opacity="0.6">
+    <circle cx="250" cy="250" r="100" fill="none"/>
+    <circle cx="250" cy="250" r="140" fill="none"/>
+    <circle cx="250" cy="250" r="180" fill="none"/>
+  </g>
+
+  <!-- Дополнительные световые лучи -->
+  <g stroke="#ffffff" stroke-width="1" opacity="0.4">
+    <line x1="250" y1="250" x2="250" y2="100"/>
+    <line x1="250" y1="250" x2="250" y2="400"/>
+    <line x1="250" y1="250" x2="100" y2="250"/>
+    <line x1="250" y1="250" x2="400" y2="250"/>
+    <line x1="250" y1="250" x2="150" y2="150"/>
+    <line x1="250" y1="250" x2="350" y2="350"/>
+    <line x1="250" y1="250" x2="150" y2="350"/>
+    <line x1="250" y1="250" x2="350" y2="150"/>
+  </g>
+</svg>

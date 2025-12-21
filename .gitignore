@@ -1,0 +1,52 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# === Virtual Environment ===
+venv/
+ENV/
+env/
+.venv
+venv.*/
+
+# === IDE & Editors ===
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# === Caching & Type Checking ===
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# === Logs & Media ===
+logs/
+#media/
+
+
+# === Secrets & Local Configs ===
+.env
+*.env
+local_settings.py
+secrets.py
+
+# === Вспомогательные файлы ===
+ToDo/
+
+# === Дополнительно ===
+.DS_Store
+.svn/
+.hg/
+*.bak
+*.tmp

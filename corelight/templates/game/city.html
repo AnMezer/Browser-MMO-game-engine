@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load avatar_extras %}
+
+{% block title %}Городская площадь{% endblock %}
+
+{% block content %}
+	<h3 class="mb-2 text-center">Городская площадь</h3>
+
+
+    {% if current_user_data.current_global_location.name != 'Город' %}
+	<div class="d-flex justify-content-between mt-2">
+		<a
+			href="{% url 'game:teleport' 'gorod' 'gorodskaya-ploshad' %}"
+			class="btn btn-primary d-flex flex-column align-items-center"
+			style="padding: 0.35rem 0.75rem; min-height: auto; line-height: 1.2;"
+			>
+			<span>
+				Портал в город
+			</span>
+			<small class="mt-1" style="font-size: 0.75rem; opacity: 0.8;">
+				Свиток: Телепорта [ 1 ]
+			</small>
+		</a>
+
+		<a
+			href="{% url 'game:start_travel' 'gorod' 'gorodskaya-ploshad' %}"
+			class="btn btn-primary d-flex flex-column align-items-center"
+			style="padding: 0.35rem 0.75rem; min-height: auto; line-height: 1.2;"
+			>
+			<span>
+				Идти в город
+			</span>
+			<small class="mt-1" style="font-size: 0.75rem; opacity: 0.8;">
+				Тестовый текст
+			</small>
+		</a>
+	</div>
+	{% endif %}
+	
+	
+  {% for sublocation in sublocations %}
+			<div class="row justify-content-center mt-5">
+				<div class="col-12">
+					<div class="card shadow-sm">
+						<div class="card-header bg-primary text-white text-center" style="font-size: 1rem;">
+							<h3 class="mb-2">{{ sublocation.name }}</h3>
+							<hr class="my-1" style="border-color: rgba(255,255,255,0.5);">
+							<p class="mb-0">{{ sublocation.description }}</p>
+							<div class="d-flex justify-content-between mt-2">
+								
+								<a
+									href="{% url 'game:city_sublocation' sublocation.slug %}"
+									class="btn btn-primary d-flex flex-column align-items-center"
+									style="padding: 0.35rem 0.75rem; min-height: auto; line-height: 1.2;"
+									>
+									<span>
+										Заглянуть
+									</span>
+									<small class="mt-1" style="font-size: 0.75rem; opacity: 0.8;">
+										Тестовый текст
+									</small>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	{% endfor %}
+{% endblock %}

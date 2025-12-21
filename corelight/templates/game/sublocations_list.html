@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load avatar_extras %}
+
+{% block title %}{{global_location}}{% endblock %}
+
+{% block content %}
+	<h3 class="mb-2" style="font-size: 1.4rem;">Вы осматриваете локацию: {{global_location}}</h3>
+
+	
+  {% for sublocation in sublocations %}
+			<div class="row justify-content-center mt-5">
+				<div class="col-12">
+					<div class="card shadow-sm">
+						<div class="card-header bg-primary text-white text-center" style="font-size: 1rem;">
+							<h3 class="mb-2">{{ sublocation }}</h3>
+							<hr class="my-1" style="border-color: rgba(255,255,255,0.5);">
+							<p class="mb-0">{{ sublocation.description }}</p>
+							<div class="d-flex justify-content-between mt-2">
+								<a
+									href="{% url 'game:teleport' global_location.slug sublocation.slug %}"
+									class="btn btn-primary d-flex flex-column align-items-center"
+									style="padding: 0.35rem 0.75rem; min-height: auto; line-height: 1.2;"
+									>
+									<span>
+										Открыть портал
+									</span>
+									<small class="mt-1" style="font-size: 0.75rem; opacity: 0.8;">
+										Свиток: Телепорта [ 1 ]
+									</small>
+								</a>
+
+								<a
+									href="{% url 'game:start_travel' global_location.slug sublocation.slug %}"
+									class="btn btn-primary d-flex flex-column align-items-center"
+									style="padding: 0.35rem 0.75rem; min-height: auto; line-height: 1.2;"
+									>
+									<span>
+										Отправиться пешком
+									</span>
+									<small class="mt-1" style="font-size: 0.75rem; opacity: 0.8;">
+										Тестовый текст
+									</small>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	{% endfor %}
+{% endblock %}

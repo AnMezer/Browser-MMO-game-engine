@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="text-center mt-5">
+    <h2>Вы идёте в {{ destination.name }}</h2>
+    <p class="lead">Осталось: <strong id="timer">{{ time_remained }}</strong> секунд</p>
+    <p class="text-muted">Страница обновится автоматически.</p>
+  </div>
+
+  <script>
+    // Получаем оставшееся время от Django (в секундах)
+    let secondsLeft = {{ time_remained }};
+    const timerElement = document.getElementById('timer');
+
+    function countdown() {
+      if (secondsLeft <= 0) {
+        // Время вышло — переходим в локацию
+        window.location.href = "{% url 'game:sublocation' destination.global_location.slug destination.slug %}";
+        return;
+      }
+
+      // Обновляем отображение
+      timerElement.textContent = secondsLeft;
+      secondsLeft -= 1;
+
+      // Запускаем следующий тик через 1 секунду
+      setTimeout(countdown, 1000);
+    }
+
+    // Запускаем таймер
+    countdown();
+  </script>
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load avatar_extras %}
+
+{% comment %}
+ОЖИДАЕМЫЙ КОНТЕКСТ ИЗ ВЬЮХИ:
+
+- current_user_data — объект пользователя (из контекстного процессора), имеет:
+    - .nickname, .level, .avatar_path,
+    - .current_global_location (.name, .slug),
+    - .current_sublocation (.name, .slug)
+
+- item_stacks: QuerySet или список ItemStack, каждый имеет:
+    - .item.name
+    - .item.description (опционально)
+    - .quantity (int)
+
+- item_instances: QuerySet или список ItemInstance, каждый имеет:
+    - .item.name
+    - .item.description (опционально)
+
+(поля .item.icon пока не используются — показываем заглушку)
+{% endcomment %}
+
+{% block title %}{{ current_user_data.nickname }}{% endblock %}
+
+{% block content %}
+<style>
+:root {
+  --inventory-rows: 4;
+  --inventory-row-height: 45px;
+  --inventory-columns: 24;
+  --inventory-height: auto; /* Пока не фиксируем высоту */
+  --side-containers-height: 180px;
+}
+</style>
+
+<div class="container-fluid px-3">
+	<div class="row justify-content-center mt-5">
+		<div class="col-12">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-center">
+					<p class="text-center mb-0">
+						<h2 class="mb-1" style="font-family: 'MedievalSharp', cursive; font-size: 1.4rem;">
+							{{ current_user_data.nickname }} <small>[{{ current_user_data.level }}]</small>
+						</h2>
+						<hr>
+					</p>
+
+					<!-- Блок с аватаром и контейнерами -->
+					<div class="d-flex justify-content-between align-items-start w-100" style="margin: 0 auto;">
+						<!-- Левый контейнер -->
+						<div class="d-flex flex-column align-items-center" style="flex-grow: 1; padding: 0 8px;">
+							<div class="card w-100" style="
+								font-family: 'MedievalSharp', cursive;
+								font-size: 0.9rem;
+								height: var(--side-containers-height);
+								display: flex;
+								flex-direction: column;
+							">
+								<div class="card-header bg-secondary text-white py-1">Левый контейнер</div>
+								<div class="card-body d-flex align-items-center justify-content-center p-2" style="background-color: #f8f4e9; flex-grow: 1;">
+									<span style="color: #777; font-size: 0.7rem;">Пусто</span>
+								</div>
+							</div>
+						</div>
+
+						<!-- Аватар -->
+						<div class="text-center">
+							<img src="{% avatar_url current_user_data.avatar_path %}" 
+								 alt="Аватар {{ current_user_data.nickname }}"
+								 class="sidebar-avatar-img">
+							<div style="
+								font-family: 'MedievalSharp', cursive;
+								font-size: 0.72rem;
+								line-height: 1.25;
+								color: #333;
+								max-width: 180px;
+								margin: 0 auto;
+								text-align: center;
+								">
+								<a href="{% url 'game:sublocation' current_user_data.current_global_location.slug current_user_data.current_sublocation.slug %}"
+									style="color: inherit; text-decoration: none;">
+									{{ current_user_data.current_global_location.name }}
+								</a>
+								<div style="color: #5a5a5a; font-size: 0.68rem;">
+									<a href="{% url 'game:sublocation' current_user_data.current_global_location.slug current_user_data.current_sublocation.slug %}"
+										style="color: inherit; text-decoration: none;">
+										→ {{ current_user_data.current_sublocation.name }}
+									</a>
+								</div>
+							</div>
+						</div>
+
+						<!-- Правый контейнер -->
+						<div class="d-flex flex-column align-items-center" style="flex-grow: 1; padding: 0 8px;">
+							<div class="card w-100" style="
+								font-family: 'MedievalSharp', cursive;
+								font-size: 0.9rem;
+								height: var(--side-containers-height);
+								display: flex;
+								flex-direction: column;
+							">
+								<div class="card-header bg-secondary text-white py-1">Правый контейнер</div>
+								<div class="card-body d-flex align-items-center justify-content-center p-2" style="background-color: #f8f4e9; flex-grow: 1;">
+									<span style="color: #777; font-size: 0.7rem;">Пусто</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Инвентарь -->
+					<div class="row justify-content-center mt-4">
+						<div class="col-12">
+							<div class="card shadow-sm">
+								<div class="card-header bg-primary text-center">
+									<p class="text-center mb-0">
+										<h2 class="mb-1" style="font-family: 'MedievalSharp', cursive; font-size: 1.4rem;">
+											Инвентарь
+										</h2>
+										<hr>
+									</p>
+								</div>
+								<div class="card-body p-2" style="background-color: #f8f4e9;">
+									<div class="d-grid gap-2" style="
+										grid-template-columns: repeat(var(--inventory-columns), 1fr);
+										width: 100%;
+										padding: 4px;
+										border: 1px solid #d5c8a3;
+										border-radius: 4px;
+										background: #fdf9ee;
+									">
+										{% for slot in inventory_display %}
+											<div class="position-relative" style="text-align: center;">
+												{% if slot.type == 'stack' %}
+													<div class="bg-light border rounded d-flex align-items-center justify-content-center"
+														style="width: 40px; height: 40px; margin: 0 auto; cursor: pointer; position: relative;"
+														data-bs-toggle="tooltip"
+														data-bs-html="true"
+														title="<strong>{{ slot.name }}</strong><br><small>{{ slot.description|default:'Нет описания' }}</small>"
+													>
+														{% if slot.logo_url %}
+															<img src="{{ slot.logo_url }}" alt="{{ slot.name }}"
+																style="width: 100%; height: 100%; object-fit: contain;">
+														{% else %}
+															<span style="font-size: 0.6rem;">?</span>
+														{% endif %}
+														<div style="
+															position: absolute;
+															bottom: 2px;
+															right: 2px;
+															background: rgba(255,255,255,0.8);
+															border: 1px solid #ccc;
+															border-radius: 2px;
+															padding: 0 2px;
+															font-family: 'MedievalSharp', cursive;
+															font-size: 0.55rem;
+															color: #2c1e0c;
+															line-height: 1;
+														">
+															{{ slot.quantity }}
+														</div>
+													</div>
+												{% elif slot.type == 'instance' %}
+													<div class="bg-light border rounded d-flex align-items-center justify-content-center"
+														style="width: 40px; height: 40px; margin: 0 auto; cursor: pointer; position: relative;"
+														data-bs-toggle="tooltip"
+														data-bs-html="true"
+														title="<strong>{{ slot.name }}</strong><br><small>{{ slot.description|default:'Нет описания' }}</small>"
+													>
+														{% if slot.logo_url %}
+															<img src="{{ slot.logo_url }}" alt="{{ slot.name }}"
+																style="width: 100%; height: 100%; object-fit: contain;">
+														{% else %}
+															<span style="font-size: 0.6rem;">?</span>
+														{% endif %}
+													</div>
+												{% else %}
+													<!-- Пустая ячейка -->
+													<div class="bg-light border rounded d-flex align-items-center justify-content-center"
+														style="width: 40px; height: 40px; margin: 0 auto; cursor: default; position: relative;"
+														data-bs-toggle="tooltip"
+														title="Пустая ячейка #{{ slot.slot_number }}"
+													>
+														<span style="font-size: 0.6rem; color: #aaa;">X</span>
+													</div>
+												{% endif %}
+											</div>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+								
+
+				</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Активация Bootstrap Tooltip -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(function (el) {
+        new bootstrap.Tooltip(el, {
+            placement: 'top',
+            html: true,
+            customClass: 'inventory-tooltip'
+        });
+    });
+});
+</script>
+
+<style>
+.inventory-tooltip .tooltip-inner {
+    font-family: 'MedievalSharp', cursive;
+    font-size: 0.75rem;
+    background-color: #fdf9ee;
+    color: #2c1e0c;
+    border: 1px solid #d5c8a3;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    max-width: 200px;
+    text-align: left;
+    padding: 6px 8px;
+}
+</style>
+{% endblock %}

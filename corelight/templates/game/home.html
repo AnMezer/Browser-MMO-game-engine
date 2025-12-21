@@ -1,0 +1,67 @@
+<!-- D:\Dev\pet-project\Django\MMO-Game\corelight\templates\game\home.html -->
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block page_title %}Добро пожаловать!{% endblock %}
+
+{% block content %}
+	{% if not user.is_authenticated %}
+		<div class="container py-5">
+			<div class="row justify-content-center">
+				<div class="col-lg-8 text-center">
+				
+					<!-- Заголовок -->
+					<h1 class="display-5 fw-bold mb-4" style="font-family: 'MedievalSharp', cursive; font-size: 2.4rem; color: #3a3226; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
+						Corelight — эпоха великих странников начинается
+					</h1>
+
+				<!-- Основной текст — как в древней летописи -->
+				<div class="text-start mx-auto" style="max-width: 600px; font-family: 'Cinzel', serif; font-size: 1.1rem; line-height: 1.8; color: #4a4030;">
+					
+					<p>
+						В мире, окутанном туманами древних лесов,<br>
+						тенями забытых крепостей и шёпотом руин,<br>
+						рождается новая эпоха — <strong>эпоха Corelight</strong>.
+					</p>
+
+					<p class="mt-4">
+						Земля полна <span style="color: #8b6b1f; font-weight: bold;">опасностей и чудес</span>:<br>
+						в туманных долинах бродят мифические звери,<br>
+						в подземельях спят артефакты, выкованные богами,<br>
+						а в небесах мерцают знаки, предвещающие великие перемены.
+					</p>
+
+					<p class="mt-4">
+						Ваш путь начинается здесь — в одном из<br>
+						<span style="color: #8b6b1f; font-weight: bold;">многочисленных уголков этого живого мира</span>.<br>
+						Выберите облик, дайте имя своему герою —<br>
+						и ступайте навстречу приключениям.
+					</p>
+
+					<p class="mt-4">
+						Здесь вы:<br>
+						— будете <span style="color: #8b6b1f; font-weight: bold;">сражаться в опасных зонах охоты</span>,<br>
+						— находить <span style="color: #8b6b1f; font-weight: bold;">редкие доспехи и оружие</span>,<br>
+						— подниматься от новичка к <span style="color: #8b6b1f; font-weight: bold;">опытному воину или искусному магу</span>,<br>
+						— и вместе с другими игроками — <span style="color: #8b6b1f; font-weight: bold;">раскрывать тайны, скрытые в глубинах мира</span>.
+					</p>
+
+					<blockquote class="mt-4 p-3 border-start" style="border-color: #b8860b; font-style: italic; color: #5a4a2f; font-size: 1.05rem;">
+						Corelight — это не просто игра.<br>
+						Это ваша легенда в мире, где каждое действие оставляет след.
+					</blockquote>
+
+				</div>
+
+				<!-- Кнопки -->
+				<div class="mt-4">
+					<a href="{% url 'register' %}" class="btn btn-success btn-lg me-3">Создать аккаунт</a>
+					<a href="{% url 'login' %}" class="btn btn-success btn-lg me-3">Войти</a>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	{% endif %}
+{% endblock %}

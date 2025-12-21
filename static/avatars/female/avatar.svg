@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фон -->
+  <rect width="200" height="200" fill="#0d0b1a" rx="20"/>
+
+  <!-- Лицо (овальное, тёмное) -->
+  <ellipse cx="100" cy="100" rx="40" ry="50" fill="#2a2438"/>
+
+  <!-- Уши (заострённые) -->
+  <path d="M65 70 Q50 50 60 30 Q70 40 75 60 Z" fill="#2a2438"/>
+  <path d="M135 70 Q150 50 140 30 Q130 40 125 60 Z" fill="#2a2438"/>
+
+  <!-- Глаза -->
+  <circle cx="85" cy="90" r="6" fill="#e0e0ff"/>
+  <circle cx="115" cy="90" r="6" fill="#e0e0ff"/>
+  <!-- Зрачки -->
+  <circle cx="85" cy="90" r="2" fill="#000"/>
+  <circle cx="115" cy="90" r="2" fill="#000"/>
+
+  <!-- Брови -->
+  <path d="M75 80 Q85 75 90 80" stroke="#5a506a" stroke-width="2" fill="none"/>
+  <path d="M110 80 Q115 75 125 80" stroke="#5a506a" stroke-width="2" fill="none"/>
+
+  <!-- Рот -->
+  <path d="M90 115 Q100 120 110 115" stroke="#5a506a" stroke-width="2" fill="none"/>
+
+  <!-- Лук и стрела (сбоку) -->
+  <path d="M160 90 L180 100 L160 110" stroke="#4a6f4a" stroke-width="3" fill="none"/>
+  <circle cx="182" cy="100" r="4" fill="#8B4513"/>
+
+  <!-- Магическая аура (светящиеся линии) -->
+  <circle cx="100" cy="100" r="60" fill="none" stroke="#5d3fbf" stroke-width="1" opacity="0.5"/>
+  <circle cx="100" cy="100" r="65" fill="none" stroke="#4a2a8c" stroke-width="1" opacity="0.3"/>
+
+  <!-- Украшение на лбу (лунный символ) -->
+  <path d="M95 75 Q100 70 105 75 Q102 73 100 72 Q98 73 95 75 Z" fill="#b0a0ff"/>
+
+</svg>
