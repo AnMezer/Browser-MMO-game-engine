@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'game',
     'django_bootstrap5',
     'widget_tweaks',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -144,6 +145,8 @@ LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/'
 
+(LOGS_DIR := BASE_DIR / "logs").mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -157,7 +160,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), 'MMO-GAME', 'logs', 'game.log'),
+            'filename': str(LOGS_DIR / 'game.log'),
             'formatter': 'detailed',
         },
         'console': {

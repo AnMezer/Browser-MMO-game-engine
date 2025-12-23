@@ -32,6 +32,7 @@ htmlcov/
 
 # === Logs & Media ===
 logs/
+*.log
 #media/
 
 
