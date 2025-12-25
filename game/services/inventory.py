@@ -1,7 +1,13 @@
+from uuid import UUID
 from game.models import ItemStack, ItemInstance, Item
 from users.models import CustomUser
 from .items import create_item_instance
-from game.exceptions import InsufficientQuantity, NoItemInInventory, ZeroDelta, WrongDeltaForInstance, OperationError
+from game.exceptions import (InsufficientQuantity,
+                            NoItemInInventory,
+                            ZeroDelta,
+                            WrongDeltaForInstance,
+                            OperationError,
+                            AddDropListInInventoryError)
 from typing import overload
 
 
@@ -21,10 +27,18 @@ def get_item_from_inventory(
     ...
 
 
+@overload
 def get_item_from_inventory(
         user: CustomUser,
         item: Item,
-        world_id: str | None = None) -> ItemStack | ItemInstance:
+        world_id: UUID) -> ItemInstance:
+    ...
+
+
+def get_item_from_inventory(
+        user: CustomUser,
+        item: Item,
+        world_id: str | UUID | None = None) -> ItemStack | ItemInstance:
     """Возвращает объект предмета из инвентаря.
 
     Args:
@@ -52,9 +66,9 @@ def get_item_from_inventory(
             f'отсутствует в инвентаре') from e
 
 
-def change_stack_quantity(
-        user: CustomUser,
-        item: Item, delta: int):
+def change_stack_quantity(user: CustomUser,
+                          item: Item,
+                          delta: int):
     """Изменяет кол-во обычных предметов в инвентаре.
 
     Args:
@@ -64,7 +78,7 @@ def change_stack_quantity(
 
     Raises:
         InsufficientQuantity: Если предметов недостатояно для удаления.
-        ZeroDelta: Если была попатка изменить кол-во на 0
+        ZeroDelta: Если была попытка изменить кол-во на 0
     """
     if delta < 0:
         item_in_inventory = get_item_from_inventory(user, item)
@@ -89,11 +103,10 @@ def change_stack_quantity(
         raise ZeroDelta('Кол-во нельзя изменять на 0')
 
 
-def add_or_remove_unique_item(
-        user: CustomUser,
-        item: Item,
-        delta: int,
-        world_id: str | None = None):
+def add_or_remove_unique_item(user: CustomUser,
+                              item: Item,
+                              delta: int,
+                              world_id: str | UUID):
     """Удаляет/добавляет предмет в ItemInstance
 
     Args:
@@ -104,7 +117,9 @@ def add_or_remove_unique_item(
                   По умолчанию None.
     """
     if delta == 1:
-        create_item_instance(item, user)
+        item_instance = ItemInstance.objects.get(world_id=world_id)
+        item_instance.owner = user
+        item_instance.save(update_fields=['owner'])
         return
     elif delta == -1 and world_id is not None:
         item_in_inventory = get_item_from_inventory(user, item, world_id)
@@ -115,11 +130,10 @@ def add_or_remove_unique_item(
             'Для изменения кол-ва у ItemInstance delta должна быть 1 | -1')
 
 
-def change_item_quantity(
-        user: CustomUser,
-        item: Item,
-        delta: int,
-        world_id: str | None = None):
+def change_item_quantity(user: CustomUser,
+                         item: Item,
+                         delta: int,
+                         world_id: str | None = None):
     """Универсальная функция для изменения кол-ва предметов в инвентаре.
 
     Args:
@@ -137,9 +151,29 @@ def change_item_quantity(
         try:
             change_stack_quantity(user, item, delta)
         except (InsufficientQuantity, ZeroDelta) as e:
-            raise OperationError(f'Ошибка при выполнении операции.') from e
+            raise OperationError('Ошибка при выполнении операции.') from e
     else:
         try:
             add_or_remove_unique_item(user, item, delta, world_id)
         except (WrongDeltaForInstance, TypeError) as e:
-            raise OperationError(f'Ошибка при выполнении операции.') from e
+            raise OperationError('Ошибка при выполнении операции.') from e
+
+
+def add_drop_list_in_inventory(user: CustomUser, drop_list: list[tuple]):
+    """Добавляет списко дропа указанному игроку.
+
+    Args:
+        user: Игрок, которому добавляем предметы.
+        drop_list: Список кортежей:[(item_id, amount, world_id | None), ...]
+
+    Raises:
+        AddDropListInInventoryError: В случае ошибки при добавлении.
+    """
+    try:
+        for drop in drop_list:
+            item_id, delta, world_id = drop
+            item = Item.objects.get(id=item_id)
+            change_item_quantity(user, item, delta, world_id)
+    except OperationError as e:
+        raise AddDropListInInventoryError(
+            f'Ошибка при добавлении {drop} игроку {user}') from e

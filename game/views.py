@@ -237,7 +237,7 @@ def attack_monster(request,  global_location_slug, sublocation_slug, monster_slu
     if not drop_list:
         print('Вам ничего не выпало')
     else:
-        utils.change_multiple_items_quantity(user, drop_list)
+        inventory.add_drop_list_in_inventory(user, drop_list)
     user.add_experience(monster.xp_reward)
     user.last_fight_at = timezone.now()
     user.save(update_fields=['last_fight_at'])

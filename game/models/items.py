@@ -114,7 +114,7 @@ class Item(models.Model):
         self.full_clean()  # вызывает clean()
         super().save(*args, **kwargs)
 
-    
+
     def is_unique_instance_needed(self):
         """
         Возвращает True, если при выдаче предмета нужно создавать ItemInstance.

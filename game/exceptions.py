@@ -17,8 +17,13 @@ class InsufficientQuantity(GameError):
 class WrongDeltaForInstance(GameError):
     """Для изменения колва у ItemInstance delta должна быть 1 | -1"""
 
+
 class OperationError(GameError):
     """Ошибка при выполнении операции"""
+
+
+class AddDropListInInventoryError(GameError):
+    """Не удалось добавить дроп-лист в инвентарь игрока"""
 
 
 class TheBigDelta(Exception):

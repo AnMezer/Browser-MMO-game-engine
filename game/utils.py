@@ -1,3 +1,5 @@
+# Старый файл с вспомогательными функциями.
+# Неиспользуемые функции отмечены префиксом old_
 from decimal import Decimal
 from random import randint
 from typing import cast
@@ -19,7 +21,7 @@ from .models import (
 )
 
 
-def change_item_quantity(user: CustomUser, item: Item, delta: int, world_id: str | None = None) -> bool:
+def old_change_item_quantity(user: CustomUser, item: Item, delta: int, world_id: str | None = None) -> bool:
     """Функция для изменения кол-ва предметов в инвентаре"""    
     if delta == 0:
         raise exceptions.ZeroDelta('Не нужно менять кол-во на 0 шт')
@@ -70,7 +72,7 @@ def change_item_quantity(user: CustomUser, item: Item, delta: int, world_id: str
 
 
 
-def change_multiple_items_quantity(user: CustomUser, item_list: list) -> bool:
+def old_change_multiple_items_quantity(user: CustomUser, item_list: list) -> bool:
     item_ids = [tpl[0] for tpl in item_list]
     items = {item.id: item for item in Item.objects.filter(id__in=item_ids)}
     for item_id, quantity, world_id in item_list:
