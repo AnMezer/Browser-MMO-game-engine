@@ -1,11 +1,10 @@
+from typing import TYPE_CHECKING
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
-from typing import TYPE_CHECKING
-
 
 from game.models import Currency, Item
-
 
 
 def monster_avatar_path(instance, filename):

@@ -1,6 +1,6 @@
 from decimal import Decimal
-from typing import Optional
 from random import randint
+from typing import Optional
 
 
 def roll_loot_amout(base_chance: Decimal,

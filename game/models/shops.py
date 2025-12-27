@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.text import slugify
 
-from game.models import SubLocation, Item
+from game.models import Item, SubLocation
 
 
 class ActivityLink(models.Model):
@@ -30,8 +30,7 @@ class Shop(models.Model):
         blank=True,
         default='Здесь еще нет описания, возможно когда-то появится'
     )
-    allowed_items = models.ManyToManyField(
-        Item,
+    allowed_items = models.ManyToManyField(Item,
         through='ShopItem',
         blank=True,
         verbose_name='Доступные предметы'

@@ -6,7 +6,6 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from game.services import monsters, inventory
 
 from game.models import (
     ActivityLink,
@@ -19,6 +18,7 @@ from game.models import (
     ShopItem,
     SubLocation,
 )
+from game.services import inventory, monsters
 from users.models import CustomUser
 
 from . import utils
@@ -253,78 +253,8 @@ def trader_test(request):
     """
     Страница торговца.
     """
-    player_inventory = []
-
-    user = cast(CustomUser, request.user)
-    inventiry_slots = user.item_slots
-    stacks = ItemStack.objects.filter(owner=user).select_related('item').order_by('item__name')
-    instances = ItemInstance.objects.filter(owner=user).select_related('item').order_by('item__name')
-    for stack in stacks:
-        item = stack.item
-        player_inventory.append(
-            {
-                'type': 'stack',
-                'item_id': item.id,
-                'name': item.name,
-                'description': item.description,
-                'logo_url': item.logo.url if item.logo else None,
-                'quantity': stack.quantity
-            }
-        )
-    for instance in instances:
-        item = instance.item
-        player_inventory.append(
-            {
-                'type': 'instance',
-                'item_id': item.id,
-                'name': item.name,
-                'description': item.description,
-                'logo_url': item.logo.url if item.logo else None,
-                'stats': utils.get_item_stats_fot_tooltip(instance),
-                'world_id': instance.world_id
-            }
-
-        )
-    # Добавим пустые слоты до максимальных возможных
-    while len(player_inventory) < inventiry_slots:
-        player_inventory.append({'type': 'empty', 'slot_number': len(player_inventory) + 1})
-
-    trader_inventory = []
-    shop = Shop.objects.get(name='Походник')
-    stacks = ShopItem.objects.filter(
-        shop=shop,
-        is_active=True,
-    ).select_related('item')
-    print(stacks)
-    for stack in stacks:
-        item = stack.item
-        if item.is_stacked:
-            trader_inventory.append(
-                {   'is_stacked': item.is_stacked,
-                    'type': item.item_type,
-                    'item_id': item.id,
-                    'name': item.name,
-                    'description': item.description,
-                    'logo_url': item.logo.url if item.logo else None,
-                    'base_price': item.cost,
-                    'max_quantity': 1000
-                }
-            )
-        if not item.is_stacked:
-            trader_inventory.append(
-                {   
-                    'is_stacked': item.is_stacked,
-                    'type': item.item_type,
-                    'item_id': item.id,
-                    'name': item.name,
-                    'description': item.description,
-                    'logo_url': item.logo.url if item.logo else None,
-                    'stats': utils.get_item_stats_fot_tooltip(stack),
-                    'base_price': item.cost,
-                    'max_quantity': 1
-                }
-            )
-    print(trader_inventory)
+    player_inventory = inventory.get_user_inventory_data(request.user)
+    trader_inventory = inventory.get_shop_inventory_data('Походник')
 
     context = {
         'player_inventory': player_inventory,

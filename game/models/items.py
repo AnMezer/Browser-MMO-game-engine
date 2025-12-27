@@ -1,12 +1,12 @@
 import uuid
+from typing import TYPE_CHECKING
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.text import slugify
 
+from game.constants import ITEM_TYPE_CHOICES, SLOT_CHOICES
 from users.models import CustomUser
-from game.constants import SLOT_CHOICES, ITEM_TYPE_CHOICES
-from typing import TYPE_CHECKING
 
 
 def item_logo_path(instance, filename):

@@ -1,14 +1,21 @@
+from typing import overload, cast
 from uuid import UUID
-from game.models import ItemStack, ItemInstance, Item
+from pprint import pprint
+
+from game.exceptions import (
+    AddDropListInInventoryError,
+    InsufficientQuantity,
+    NoItemInInventory,
+    OperationError,
+    WrongDeltaForInstance,
+    ZeroDelta,
+)
+from game.models import Item, ItemInstance, ItemStack, ShopItem, Shop
+from game.models.shops import Shop
 from users.models import CustomUser
+from game.utils import get_item_stats_fot_tooltip  # нужно перенести
+
 from .items import create_item_instance
-from game.exceptions import (InsufficientQuantity,
-                            NoItemInInventory,
-                            ZeroDelta,
-                            WrongDeltaForInstance,
-                            OperationError,
-                            AddDropListInInventoryError)
-from typing import overload
 
 
 @overload
@@ -57,8 +64,8 @@ def get_item_from_inventory(
         if world_id is None:
             item_in_bag = ItemStack.objects.get(owner=user, item=item)
         else:
-            item_in_bag = ItemInstance.objects.get(
-                    owner=user, world_id=world_id)
+            item_in_bag = ItemInstance.objects.get(owner=user,
+                                                   world_id=world_id)
         return item_in_bag
     except (ItemStack.DoesNotExist, ItemInstance.DoesNotExist) as e:
         raise NoItemInInventory(
@@ -177,3 +184,88 @@ def add_drop_list_in_inventory(user: CustomUser, drop_list: list[tuple]):
     except OperationError as e:
         raise AddDropListInInventoryError(
             f'Ошибка при добавлении {drop} игроку {user}') from e
+
+
+def get_user_inventory_data(user: CustomUser) -> list[dict]:
+    """Возвращает список с предметами в инвентаре.
+
+    Список предназначен для дальнейшей отпрвки в шаблон.
+    Args:
+        user: Юзер, чей инвентарь нужно получить.
+
+    Returns:
+        player_inventory: Список с предметами в инвентаре.
+    """
+    player_inventory = []
+    inventiry_slots = user.item_slots
+    stacks = ItemStack.objects.filter(
+        owner=user).select_related('item').order_by('item__name')
+    instances = ItemInstance.objects.filter(
+        owner=user).select_related('item').order_by('item__name')
+    for stack in stacks:
+        item: Item = stack.item
+        player_inventory.append(
+            {
+                'type': 'stack',
+                'item_id': item.id,
+                'name': item.name,
+                'description': item.description,
+                'logo_url': item.logo.url if item.logo else None,
+                'quantity': stack.quantity
+            }
+        )
+    for instance in instances:
+        inst_item: Item = instance.item
+        print(type(item))
+        player_inventory.append(
+            {
+                'type': 'instance',
+                'item_id': inst_item.id,
+                'name': inst_item.name,
+                'description': inst_item.description,
+                'logo_url': inst_item.logo.url if inst_item.logo else None,
+                'stats': get_item_stats_fot_tooltip(instance),
+                'world_id': instance.world_id
+            }
+
+        )
+    # Добавим пустые слоты до максимальных возможных
+    while len(player_inventory) < inventiry_slots:
+        player_inventory.append({'type': 'empty',
+                                 'slot_number': len(player_inventory) + 1})
+    return player_inventory
+
+
+def get_shop_inventory_data(shop_name: str):
+    """Возвращает список с инвентарем магазина.
+
+    Список предназначен для дальнейшей отпрвки в шаблон.
+    Args:
+        shop_name: Название магазина
+
+    Returns:
+        trader_inventory: Список с предметами, продающимися в магазине.
+    """
+    trader_inventory = []
+    shop = Shop.objects.get(name=shop_name)
+    stacks = ShopItem.objects.filter(shop=shop,
+                                     is_active=True).select_related('item')
+    for stack in stacks:
+        item: Item = stack.item
+        if item.is_stacked:
+            max_quantity = 1000
+        max_quantity = 1
+        trader_inventory.append(
+            {
+                'is_stacked': item.is_stacked,
+                'type': item.item_type,
+                'item_id': item.id,
+                'name': item.name,
+                'description': item.description,
+                'logo_url': item.logo.url if item.logo else None,
+                'stats': get_item_stats_fot_tooltip(stack),
+                'base_price': item.cost,
+                'max_quantity': max_quantity
+            }
+        )
+    return trader_inventory

@@ -1,8 +1,9 @@
+import logging
+from typing import Optional
+
+from game.exceptions import NoItemInInventory, ZeroDelta
 from game.models import Item, ItemInstance, ItemStack
 from users.models import CustomUser
-import logging
-from game.exceptions import NoItemInInventory, ZeroDelta
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 

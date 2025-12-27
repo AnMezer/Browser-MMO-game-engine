@@ -4,6 +4,7 @@ from decimal import Decimal
 from random import randint
 from typing import cast
 
+from game.models.shops import ShopItem
 from users.models import CustomUser
 
 from . import exceptions
@@ -96,7 +97,7 @@ def perform_attack(user: CustomUser, monster:Monster) -> bool:
             print(f'В бою победил {winner}')
         return True
 
-def get_item_stats_fot_tooltip(instance: ItemInstance):
+def get_item_stats_fot_tooltip(instance: ItemInstance | Item | ShopItem):
     """Готовит словарь со статами предмета для отображения в тултипе"""
     stats = {}
     for stat_name, value in BASE_STATS.items():

@@ -1,9 +1,12 @@
-from game.models import Monster, MonsterDrop, Item, ItemInstance
-from typing import cast
-from random import randint
 from pprint import pprint
-from . import items, utils
+from random import randint
+from typing import cast
+
 from django.db.models import QuerySet
+
+from game.models import Item, ItemInstance, Monster, MonsterDrop
+
+from . import items, utils
 
 
 def get_amount_of_loot(monster: Monster) -> list[tuple[int, int, str | None]]:
